@@ -1,0 +1,34 @@
+---
+# Gateway
+#
+# Replaces: The Ingress Controller's Service + deployment config
+#
+# Gateway defines the entry point: which ports to listen on,
+# what protocols to accept, and TLS config. This is infrastructure
+# config — not application config.
+#
+# Key improvement over Ingress:
+#   - Explicit listener definitions (no hidden behavior)
+#   - TLS is configured HERE (not scattered in annotations)
+#   - Multiple listeners per Gateway (HTTP + HTTPS + gRPC etc.)
+#   - Can allow specific namespaces to attach routes (AllowedRoutes)
+#
+# Migration note:
+#   nginx.ingress.kubernetes.io/* annotations → Gateway listeners + HTTPRoute filters
+#
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway
+  namespace: demo
+spec:
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      # AllowedRoutes controls which namespaces can attach HTTPRoutes
+      # "Same" = only routes in the same namespace (demo) can attach
+      allowedRoutes:
+        namespaces:
+          from: Same

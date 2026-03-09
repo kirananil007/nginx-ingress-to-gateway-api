@@ -1,0 +1,23 @@
+---
+# EnvoyProxy — configures how Envoy Gateway provisions the data plane
+#
+# By default, Envoy Gateway creates a LoadBalancer service for the proxy.
+# In kind (no cloud provider), LoadBalancer IPs are never assigned, so
+# the Gateway stays PROGRAMMED=False.
+#
+# This resource tells Envoy Gateway to use NodePort instead, with a fixed
+# port (30080) that maps to the host via kind's extraPortMappings.
+#
+# Referenced by GatewayClass via parametersRef.
+#
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: kind-proxy-config
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: NodePort

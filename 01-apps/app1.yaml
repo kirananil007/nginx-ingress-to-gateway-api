@@ -1,0 +1,47 @@
+---
+# App1: a "frontend" service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+  labels:
+    app: app1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+        - name: app1
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=Hello from App1 (Frontend Service) 🚀"
+            - "-listen=:5678"
+          ports:
+            - containerPort: 5678
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1-svc
+  labels:
+    app: app1
+spec:
+  selector:
+    app: app1
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5678

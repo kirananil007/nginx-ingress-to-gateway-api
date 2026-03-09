@@ -1,0 +1,68 @@
+---
+# HTTPRoute
+#
+# Replaces: Ingress rules + annotations
+#
+
+#
+# Key improvements over Ingress:
+#   - Typed fields (not string annotations)
+#   - Path rewriting is a first-class filter (not an annotation)
+#   - Multiple backends per rule (weighted traffic splitting)
+#   - Header/query param matching built-in
+#   - Works with ANY Gateway API controller (Envoy, Cilium, Istio...)
+#
+# Migration note:
+#   Ingress.spec.rules  →  HTTPRoute.spec.rules
+#   .host               →  .hostnames
+#   .http.paths         →  .rules[].matches
+#   .backend            →  .rules[].backendRefs
+#   nginx annotations   →  .rules[].filters
+#
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-httproute
+  namespace: demo
+spec:
+  # parentRefs attaches this route to a specific Gateway
+  # This replaces: spec.ingressClassName: nginx
+  parentRefs:
+    - name: demo-gateway
+      namespace: demo
+
+  # Host-based routing (same as Ingress spec.rules[].host)
+  hostnames:
+    - "demo.local"
+
+  rules:
+    # Rule 1: Route /app1/* → app1-svc
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /app1
+      # URLRewrite filter replaces nginx.ingress.kubernetes.io/rewrite-target
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: app1-svc
+          port: 80
+
+    # Rule 2: Route /app2/* → app2-svc
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /app2
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: app2-svc
+          port: 80

@@ -1,0 +1,47 @@
+---
+# App2: a "backend/API" service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+  labels:
+    app: app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+        - name: app2
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=Hello from App2 (Backend API Service) ⚙️"
+            - "-listen=:5678"
+          ports:
+            - containerPort: 5678
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2-svc
+  labels:
+    app: app2
+spec:
+  selector:
+    app: app2
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5678
