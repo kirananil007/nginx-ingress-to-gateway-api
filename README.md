@@ -150,10 +150,10 @@ spec:
 
 ```bash
 curl -H "Host: demo.local" http://localhost:18080/app1
-# Hello from App1 (Frontend Service) 🚀
+# Hello from App1 (Frontend Service)
 
 curl -H "Host: demo.local" http://localhost:18080/app2
-# Hello from App2 (Backend API Service) ⚙️
+# Hello from App2 (Backend API Service)
 ```
 
 Works. But look at that Ingress — regex path matching, controller-specific annotations,
@@ -320,10 +320,10 @@ ENVOY_SVC=$(kubectl get svc -n envoy-gateway-system --no-headers \
 kubectl port-forward -n envoy-gateway-system svc/$ENVOY_SVC 9090:80 &
 
 curl -H "Host: demo.local" http://localhost:9090/app1
-# Hello from App1 (Frontend Service) 🚀
+# Hello from App1 (Frontend Service)
 
 curl -H "Host: demo.local" http://localhost:9090/app2
-# Hello from App2 (Backend API Service) ⚙️
+# Hello from App2 (Backend API Service)
 ```
 
 Same result. Different (better) control plane.
@@ -346,7 +346,7 @@ kubectl get ns ingress-nginx   # NotFound
 Gateway API still serving:
 ```bash
 curl -H "Host: demo.local" http://localhost:9090/app1
-# Hello from App1 (Frontend Service) 🚀
+# Hello from App1 (Frontend Service)
 ```
 
 Done. nginx is gone, apps are still up.
